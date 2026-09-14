@@ -18,10 +18,12 @@
 
 package me.kavishdevar.librepods.presentation.screens
 
+import android.app.LocaleManager
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
+import android.os.LocaleList
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -184,6 +186,27 @@ fun AppSettingsScreen(
                 )
             }
         }
+
+        val localeManager = context.getSystemService(LocaleManager::class.java)
+        val selectedLanguage = localeManager.applicationLocales[0]?.language.orEmpty()
+        StyledList(title = stringResource(R.string.app_language)) {
+            listOf(
+                "" to stringResource(R.string.language_system_default),
+                "en" to stringResource(R.string.language_english),
+                "ko" to stringResource(R.string.language_korean)
+            ).forEach { (languageTag, label) ->
+                StyledListItem(
+                    name = label,
+                    selected = selectedLanguage == languageTag,
+                    onClick = {
+                        if (selectedLanguage != languageTag) {
+                            localeManager.applicationLocales = LocaleList.forLanguageTags(languageTag)
+                        }
+                    }
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(16.dp))
 
         StyledToggle(
             title = stringResource(R.string.appearance),
@@ -501,7 +524,7 @@ fun AppSettingsScreen(
                         Toast.makeText(context, successText, Toast.LENGTH_SHORT).show()
                     }) {
                     Text(
-                        "Save",
+                        stringResource(R.string.save),
                         fontFamily = FontFamily(Font(R.font.sf_pro)),
                         fontWeight = FontWeight.Medium
                     )
@@ -510,7 +533,7 @@ fun AppSettingsScreen(
                 TextButton(
                     onClick = { viewModel.setShowCameraDialog(false) }) {
                     Text(
-                        "Cancel",
+                        stringResource(R.string.cancel),
                         fontFamily = FontFamily(Font(R.font.sf_pro)),
                         fontWeight = FontWeight.Medium
                     )

@@ -2906,7 +2906,10 @@ class AirPodsService : Service(), SharedPreferences.OnSharedPreferenceChangeList
                 override fun onServiceDisconnected(profile: Int) {}
             }, BluetoothProfile.A2DP)
             try {
-                device?.disconnect()
+                // Public only since API 37; use the existing platform method on older SDKs.
+                device?.let { bluetoothDevice ->
+                    BluetoothDevice::class.java.getMethod("disconnect").invoke(bluetoothDevice)
+                }
             } catch (e: Exception) {
                 Log.w(TAG, "device.disconnect() failed, $e")
             }
